@@ -85,6 +85,13 @@ spec:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     # server: https://acme-v02.api.letsencrypt.org/directory
     email: you@example.com
+    # Required — cannot be omitted. Secret holding the ACME account private key.
+    # You only supply the name; cert-manager generates the key and writes it on
+    # first account registration, so you don't create this Secret yourself.
+    # Why: it persists the ACME account key so restarts/renewals reuse the same
+    #      account instead of re-registering (which hits Let's Encrypt rate limits).
+    # Note: this is the ACME *account* key, not the issued certificate's key
+    # (the cert's key lives in the Certificate's secretName).
     privateKeySecretRef:
       name: letsencrypt-account-key
     solvers:

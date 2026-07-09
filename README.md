@@ -66,6 +66,11 @@ spec:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     # server: https://acme-v02.api.letsencrypt.org/directory
     email: you@example.com
+    # 必填,不可省略:ACME 账户私钥存放的 Secret。你只需给出 name,私钥内容由
+    # cert-manager 首次注册账户时自动生成并写入,无需手动创建这个 Secret。
+    # 作用:把 ACME 账户私钥固定持久化,使重启/续期时复用同一个账户,避免重复注册
+    #       触发 Let's Encrypt 速率限制。
+    # 注意:这是「ACME 账户」的私钥,不是签发出来的证书私钥(证书私钥在 Certificate 的 secretName 里)。
     privateKeySecretRef:
       name: letsencrypt-account-key
     solvers:
