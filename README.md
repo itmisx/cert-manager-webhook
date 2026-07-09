@@ -31,12 +31,12 @@
 helm install cert-manager-webhook-dns \
   oci://ghcr.io/itmisx/charts/cert-manager-webhook-dns \
   --namespace cert-manager \
-  --set groupName=acme.itmisx.com
+  --set groupName=acme.example.com
 ```
 
 默认安装最新版本;如需固定版本,追加 `--version <x.y.z>`。chart 默认使用镜像 `ghcr.io/itmisx/cert-manager-webhook`(标签取 chart 的 `appVersion`),无需额外设置。`groupName` 可为任意你能控制的域名,只需与每个 Issuer 的 `webhook.groupName` **保持一致**。
 
-> 想从源码安装(开发用):`git clone` 后 `helm install cert-manager-webhook-dns ./deploy/cert-manager-webhook-dns -n cert-manager --set groupName=acme.itmisx.com`。
+> 想从源码安装(开发用):`git clone` 后 `helm install cert-manager-webhook-dns ./deploy/cert-manager-webhook-dns -n cert-manager --set groupName=acme.example.com`。
 
 ## 快速开始
 
@@ -46,11 +46,18 @@ helm install cert-manager-webhook-dns \
 
 对 ClusterIssuer 而言,Secret 需放在 cert-manager 所在命名空间:
 
-```bash
-kubectl -n cert-manager create secret generic alidns-credentials \
-  --from-literal=access-key=你的_ACCESS_KEY_ID \
-  --from-literal=secret-key=你的_ACCESS_KEY_SECRET
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alidns-credentials
+  namespace: cert-manager
+stringData:
+  access-key: "你的_ACCESS_KEY_ID"
+  secret-key: "你的_ACCESS_KEY_SECRET"
 ```
+
+保存为 `secret.yaml` 后 `kubectl apply -f secret.yaml` 应用。
 
 ### 2. 创建 ClusterIssuer
 
@@ -76,7 +83,7 @@ spec:
     solvers:
       - dns01:
           webhook:
-            groupName: acme.itmisx.com
+            groupName: acme.example.com
             solverName: alidns
             config:
               regionId: cn-hangzhou
@@ -155,7 +162,7 @@ spec:
 确认 webhook 已注册,并观察签发过程:
 
 ```bash
-kubectl get apiservice v1alpha1.acme.itmisx.com   # 应为 Available=True
+kubectl get apiservice v1alpha1.acme.example.com   # 应为 Available=True
 kubectl describe certificate example-com-tls
 kubectl describe challenge                          # DNS-01 的 presenting 进度
 kubectl -n cert-manager logs deploy/cert-manager-webhook-dns

@@ -21,7 +21,7 @@ spec:
       - dns01:
           webhook:
             # Must match the chart's `groupName` and the APIService group.
-            groupName: acme.itmisx.com
+            groupName: acme.example.com
             # Selects the AliDNS provider (this webhook's solverName).
             solverName: alidns
             config:

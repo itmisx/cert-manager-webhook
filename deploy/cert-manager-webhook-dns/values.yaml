@@ -1,7 +1,7 @@
 # -- The GROUP_NAME this webhook serves. It MUST match the `groupName` you set
 # in every Issuer/ClusterIssuer that references this webhook. Pick a domain you
 # control to avoid collisions with other webhooks in the cluster.
-groupName: acme.itmisx.com
+groupName: acme.example.com
 
 # cert-manager installation this webhook integrates with.
 certManager:

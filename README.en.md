@@ -41,7 +41,7 @@ so you can install **without cloning the repo** (Helm 3.8+ supports OCI natively
 helm install cert-manager-webhook-dns \
   oci://ghcr.io/itmisx/charts/cert-manager-webhook-dns \
   --namespace cert-manager \
-  --set groupName=acme.itmisx.com
+  --set groupName=acme.example.com
 ```
 
 Installs the latest version by default; pin a specific one with
@@ -51,7 +51,7 @@ extra flags are needed. `groupName` can be any domain you control; it just has t
 match every Issuer's `webhook.groupName`.
 
 > To install from source (for development): `git clone` then
-> `helm install cert-manager-webhook-dns ./deploy/cert-manager-webhook-dns -n cert-manager --set groupName=acme.itmisx.com`.
+> `helm install cert-manager-webhook-dns ./deploy/cert-manager-webhook-dns -n cert-manager --set groupName=acme.example.com`.
 
 ## Quick start
 
@@ -64,11 +64,18 @@ in [`examples/`](./examples/).
 
 For a ClusterIssuer, the Secret must live in cert-manager's namespace:
 
-```bash
-kubectl -n cert-manager create secret generic alidns-credentials \
-  --from-literal=access-key=YOUR_ACCESS_KEY_ID \
-  --from-literal=secret-key=YOUR_ACCESS_KEY_SECRET
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alidns-credentials
+  namespace: cert-manager
+stringData:
+  access-key: "YOUR_ACCESS_KEY_ID"
+  secret-key: "YOUR_ACCESS_KEY_SECRET"
 ```
+
+Save as `secret.yaml`, then apply with `kubectl apply -f secret.yaml`.
 
 ### 2. Create a ClusterIssuer
 
@@ -97,7 +104,7 @@ spec:
     solvers:
       - dns01:
           webhook:
-            groupName: acme.itmisx.com
+            groupName: acme.example.com
             solverName: alidns
             config:
               regionId: cn-hangzhou
@@ -180,7 +187,7 @@ manifests).
 Check the webhook is registered and watch issuance:
 
 ```bash
-kubectl get apiservice v1alpha1.acme.itmisx.com   # should be Available=True
+kubectl get apiservice v1alpha1.acme.example.com   # should be Available=True
 kubectl describe certificate example-com-tls
 kubectl describe challenge                          # DNS-01 presenting progress
 kubectl -n cert-manager logs deploy/cert-manager-webhook-dns
