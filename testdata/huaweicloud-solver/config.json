@@ -1,0 +1,12 @@
+{
+  "region": "cn-north-4",
+  "ttl": 300,
+  "accessKeySecretRef": {
+    "name": "huaweicloud-credentials",
+    "key": "access-key"
+  },
+  "secretKeySecretRef": {
+    "name": "huaweicloud-credentials",
+    "key": "secret-key"
+  }
+}

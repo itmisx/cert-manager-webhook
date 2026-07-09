@@ -1,0 +1,24 @@
+# A certificate issued via the AliDNS DNS-01 webhook.
+#
+# KEY POINTS for browser trust:
+#   * dnsNames become the certificate's Subject Alternative Names (SANs). Chrome,
+#     Safari and Firefox validate the hostname ONLY against SANs and ignore the
+#     Common Name. ALWAYS list every hostname here.
+#   * DNS-01 is the only ACME challenge that can issue WILDCARD certificates
+#     (*.example.com), which HTTP-01 cannot.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: example-com-tls
+  namespace: default
+spec:
+  secretName: example-com-tls
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  # commonName is optional and, if set, must ALSO appear in dnsNames. It is fine
+  # to omit it entirely — cert-manager derives one from the first dnsName.
+  dnsNames:
+    - example.com
+    - www.example.com
+    - "*.example.com" # wildcard — only possible with DNS-01

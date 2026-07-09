@@ -1,0 +1,12 @@
+{
+  "regionId": "cn-hangzhou",
+  "ttl": 600,
+  "accessKeyIdSecretRef": {
+    "name": "alidns-credentials",
+    "key": "access-key-id"
+  },
+  "accessKeySecretSecretRef": {
+    "name": "alidns-credentials",
+    "key": "access-key-secret"
+  }
+}

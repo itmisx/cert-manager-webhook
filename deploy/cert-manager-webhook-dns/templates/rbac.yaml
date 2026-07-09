@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "webhook.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+---
+# Allow the webhook to read credential Secrets referenced by Issuers. dns-01
+# challenge Secrets can live in any namespace (the namespace of the Issuer, or
+# the cert-manager namespace for a ClusterIssuer), so this is cluster-scoped and
+# limited to Secrets.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "webhook.fullname" . }}:secret-reader
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "webhook.fullname" . }}:secret-reader
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "webhook.fullname" . }}:secret-reader
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: {{ include "webhook.fullname" . }}
+    namespace: {{ .Release.Namespace | quote }}
+---
+# Grant the webhook the delegated authentication/authorization it needs as an
+# aggregated apiserver.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "webhook.fullname" . }}:auth-delegator
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: {{ include "webhook.fullname" . }}
+    namespace: {{ .Release.Namespace | quote }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "webhook.fullname" . }}:webhook-authentication-reader
+  namespace: kube-system
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: {{ include "webhook.fullname" . }}
+    namespace: {{ .Release.Namespace | quote }}
+---
+# Let cert-manager's controller call this webhook's ACME solver API group.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "webhook.fullname" . }}:domain-solver
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - {{ .Values.groupName }}
+    resources:
+      - "*"
+    verbs:
+      - "create"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "webhook.fullname" . }}:domain-solver
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "webhook.fullname" . }}:domain-solver
+subjects:
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: {{ .Values.certManager.serviceAccountName }}
+    namespace: {{ .Values.certManager.namespace }}

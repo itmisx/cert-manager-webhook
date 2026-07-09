@@ -27,6 +27,15 @@ go.work.sum
 # env file
 .env
 
+# OS junk
+.DS_Store
+
+# Build output
+/bin/
+
+# Real credentials for the conformance suite — never commit these
+testdata/**/secret.yaml
+
 # Editor/IDE
 # .idea/
 # .vscode/

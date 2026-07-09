@@ -1,0 +1,58 @@
+# -- The GROUP_NAME this webhook serves. It MUST match the `groupName` you set
+# in every Issuer/ClusterIssuer that references this webhook. Pick a domain you
+# control to avoid collisions with other webhooks in the cluster.
+groupName: acme.itmisx.com
+
+# cert-manager installation this webhook integrates with.
+certManager:
+  # -- Namespace cert-manager is installed in.
+  namespace: cert-manager
+  # -- ServiceAccount cert-manager's controller runs as. It is granted
+  # permission to call this webhook's API group.
+  serviceAccountName: cert-manager
+
+image:
+  repository: ghcr.io/itmisx/cert-manager-webhook
+  tag: "" # defaults to .Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 443
+
+# Log verbosity (0-6). Passed to the webhook as -v.
+logLevel: 2
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 64Mi
+
+# Hardened-by-default pod/container security context. The image runs as a
+# non-root distroless binary.
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+podLabels: {}
+podAnnotations: {}

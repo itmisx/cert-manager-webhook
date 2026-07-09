@@ -1,0 +1,32 @@
+# Production Let's Encrypt ClusterIssuer using the AliDNS webhook.
+#
+# ⚠️  Use the PRODUCTION ACME URL below. The staging URL
+#     (https://acme-staging-v02.api.letsencrypt.org/directory) issues certs from
+#     an untrusted fake root, so browsers reject them. See the README.
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: you@example.com
+    privateKeySecretRef:
+      name: letsencrypt-prod-account-key
+    solvers:
+      - dns01:
+          webhook:
+            # Must match the chart's `groupName` and the APIService group.
+            groupName: acme.itmisx.com
+            # Selects the AliDNS provider (this webhook's solverName).
+            solverName: alidns
+            config:
+              # region is optional; DNS is a global AliDNS service.
+              regionId: cn-hangzhou
+              ttl: 600
+              accessKeyIdSecretRef:
+                name: alidns-credentials
+                key: access-key-id
+              accessKeySecretSecretRef:
+                name: alidns-credentials
+                key: access-key-secret

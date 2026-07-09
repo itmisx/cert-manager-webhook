@@ -1,0 +1,11 @@
+{
+  "ttl": 300,
+  "accessKeySecretRef": {
+    "name": "baiducloud-credentials",
+    "key": "access-key"
+  },
+  "secretKeySecretRef": {
+    "name": "baiducloud-credentials",
+    "key": "secret-key"
+  }
+}

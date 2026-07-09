@@ -1,0 +1,21 @@
+apiVersion: v2
+name: cert-manager-webhook-dns
+description: cert-manager ACME dns-01 solver webhook for Alibaba Cloud DNS (AliDNS), Tencent Cloud DNS (DNSPod), Huawei Cloud DNS and Baidu AI Cloud DNS, with a pluggable architecture for additional providers.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - cert-manager
+  - acme
+  - dns01
+  - alidns
+  - alibaba-cloud
+  - dnspod
+  - tencent-cloud
+  - huawei-cloud
+  - baidu-cloud
+home: https://github.com/itmisx/cert-manager-webhook
+sources:
+  - https://github.com/itmisx/cert-manager-webhook
+maintainers:
+  - name: itmisx

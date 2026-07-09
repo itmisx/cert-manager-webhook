@@ -1,0 +1,20 @@
+# Registers the webhook as an aggregated API server for the ACME solver group.
+# cert-manager's cainjector fills in .spec.caBundle from the serving Certificate
+# referenced by the inject-ca-from annotation.
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1alpha1.{{ .Values.groupName }}
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+  annotations:
+    cert-manager.io/inject-ca-from: "{{ .Release.Namespace }}/{{ include "webhook.servingCertificate" . }}"
+spec:
+  group: {{ .Values.groupName }}
+  groupPriorityMinimum: 1000
+  versionPriority: 15
+  service:
+    name: {{ include "webhook.fullname" . }}
+    namespace: {{ .Release.Namespace | quote }}
+    port: {{ .Values.service.port }}
+  version: v1alpha1

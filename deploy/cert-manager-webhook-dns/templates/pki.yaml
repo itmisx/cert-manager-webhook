@@ -1,0 +1,60 @@
+# The webhook is an aggregated apiserver and must serve TLS. We use cert-manager
+# itself (already a dependency) to mint a self-signed CA and a serving cert for
+# the webhook Service. cainjector then wires the CA into the APIService.
+
+# 1. A self-signed issuer used only to bootstrap our own CA.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "webhook.selfSignedIssuer" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+---
+# 2. The webhook's own CA certificate.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "webhook.rootCACertificate" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "webhook.rootCACertificate" . }}
+  duration: 43800h # 5y
+  issuerRef:
+    name: {{ include "webhook.selfSignedIssuer" . }}
+  commonName: "ca.{{ include "webhook.fullname" . }}.cert-manager"
+  isCA: true
+---
+# 3. An issuer backed by that CA.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "webhook.rootCAIssuer" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+spec:
+  ca:
+    secretName: {{ include "webhook.rootCACertificate" . }}
+---
+# 4. The serving certificate for the webhook Service, mounted by the Deployment.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "webhook.servingCertificate" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "webhook.labels" . | nindent 4 }}
+spec:
+  secretName: {{ include "webhook.servingCertificate" . }}
+  duration: 8760h # 1y
+  issuerRef:
+    name: {{ include "webhook.rootCAIssuer" . }}
+  dnsNames:
+    - {{ include "webhook.fullname" . }}
+    - {{ include "webhook.fullname" . }}.{{ .Release.Namespace }}
+    - {{ include "webhook.fullname" . }}.{{ .Release.Namespace }}.svc

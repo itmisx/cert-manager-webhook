@@ -1,0 +1,31 @@
+✅ {{ include "webhook.fullname" . }} installed.
+
+API group : {{ .Values.groupName }}
+Solvers   : alidns, tencentcloud, huaweicloud, baiducloud
+
+Next steps
+──────────
+1. Create a Secret with your DNS provider credentials (in the namespace of the
+   Issuer — for a ClusterIssuer that is "{{ .Values.certManager.namespace }}").
+   For AliDNS:
+
+     kubectl -n {{ .Values.certManager.namespace }} create secret generic alidns-credentials \
+       --from-literal=access-key-id=YOUR_ID \
+       --from-literal=access-key-secret=YOUR_SECRET
+
+   (See examples/ for tencentcloud and huaweicloud credential Secrets.)
+
+2. Create a ClusterIssuer that points at Let's Encrypt PRODUCTION and uses this
+   webhook. IMPORTANT: use the production URL below, NOT the staging URL, or
+   browsers will reject the certificate as untrusted:
+
+     server: https://acme-v02.api.letsencrypt.org/directory
+
+   A full example is in examples/clusterissuer-letsencrypt-prod.yaml.
+
+3. Request a certificate. Always set spec.dnsNames (SANs) — modern browsers
+   ignore commonName. See examples/certificate.yaml.
+
+Verify the APIService is available:
+
+  kubectl get apiservice v1alpha1.{{ .Values.groupName }}
