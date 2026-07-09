@@ -66,8 +66,8 @@ For a ClusterIssuer, the Secret must live in cert-manager's namespace:
 
 ```bash
 kubectl -n cert-manager create secret generic alidns-credentials \
-  --from-literal=access-key-id=YOUR_ACCESS_KEY_ID \
-  --from-literal=access-key-secret=YOUR_ACCESS_KEY_SECRET
+  --from-literal=access-key=YOUR_ACCESS_KEY_ID \
+  --from-literal=secret-key=YOUR_ACCESS_KEY_SECRET
 ```
 
 ### 2. Create a ClusterIssuer
@@ -94,12 +94,12 @@ spec:
             solverName: alidns
             config:
               regionId: cn-hangzhou
-              accessKeyIdSecretRef:
+              accessKeyRef:
                 name: alidns-credentials
-                key: access-key-id
-              accessKeySecretSecretRef:
+                key: access-key
+              secretKeyRef:
                 name: alidns-credentials
-                key: access-key-secret
+                key: secret-key
 ```
 
 ### 3. Request a certificate
@@ -135,8 +135,8 @@ manifests).
 
 | Field                        | Type   | Required | Default              | Description |
 |------------------------------|--------|----------|----------------------|-------------|
-| `accessKeyIdSecretRef`       | object | yes      | —                    | Secret ref to the AccessKey **ID** (`key` defaults to `access-key-id`). |
-| `accessKeySecretSecretRef`   | object | yes      | —                    | Secret ref to the AccessKey **Secret** (`key` defaults to `access-key-secret`). |
+| `accessKeyRef`               | object | yes      | —                    | Secret ref to the AccessKey **ID** (`key` defaults to `access-key`). |
+| `secretKeyRef`               | object | yes      | —                    | Secret ref to the AccessKey **Secret** (`key` defaults to `secret-key`). |
 | `regionId`                   | string | no       | *(unset)*            | Optional region, e.g. `cn-hangzhou`. DNS is a global service. |
 | `endpoint`                   | string | no       | `alidns.aliyuncs.com`| Override the API endpoint. |
 | `ttl`                        | int    | no       | `600`                | TXT record TTL (seconds). Clamped to ≥ 600 (AliDNS free-plan minimum). |
@@ -145,8 +145,8 @@ manifests).
 
 | Field                  | Type   | Required | Default   | Description |
 |------------------------|--------|----------|-----------|-------------|
-| `secretIdSecretRef`    | object | yes      | —         | Secret ref to the **SecretId** (`key` defaults to `secret-id`). |
-| `secretKeySecretRef`   | object | yes      | —         | Secret ref to the **SecretKey** (`key` defaults to `secret-key`). |
+| `accessKeyRef`    | object | yes      | —         | Secret ref to the **SecretId** (`key` defaults to `access-key`). |
+| `secretKeyRef`   | object | yes      | —         | Secret ref to the **SecretKey** (`key` defaults to `secret-key`). |
 | `region`               | string | no       | *(unset)* | Optional; DNSPod is a global service. |
 | `ttl`                  | int    | no       | `600`     | TXT record TTL (seconds). |
 
@@ -154,8 +154,8 @@ manifests).
 
 | Field                  | Type   | Required | Default      | Description |
 |------------------------|--------|----------|--------------|-------------|
-| `accessKeySecretRef`   | object | yes      | —            | Secret ref to the **Access Key (AK)** (`key` defaults to `access-key`). |
-| `secretKeySecretRef`   | object | yes      | —            | Secret ref to the **Secret Key (SK)** (`key` defaults to `secret-key`). |
+| `accessKeyRef`   | object | yes      | —            | Secret ref to the **Access Key (AK)** (`key` defaults to `access-key`). |
+| `secretKeyRef`   | object | yes      | —            | Secret ref to the **Secret Key (SK)** (`key` defaults to `secret-key`). |
 | `region`               | string | no       | `cn-north-4` | DNS endpoint region. |
 | `ttl`                  | int    | no       | `300`        | TXT record TTL (seconds). |
 
@@ -163,8 +163,8 @@ manifests).
 
 | Field                  | Type   | Required | Default   | Description |
 |------------------------|--------|----------|-----------|-------------|
-| `accessKeySecretRef`   | object | yes      | —         | Secret ref to the **Access Key** (`key` defaults to `access-key`). |
-| `secretKeySecretRef`   | object | yes      | —         | Secret ref to the **Secret Key** (`key` defaults to `secret-key`). |
+| `accessKeyRef`   | object | yes      | —         | Secret ref to the **Access Key** (`key` defaults to `access-key`). |
+| `secretKeyRef`   | object | yes      | —         | Secret ref to the **Secret Key** (`key` defaults to `secret-key`). |
 | `endpoint`             | string | no       | `dns.baidubce.com` | Override the API endpoint. |
 | `ttl`                  | int    | no       | `300`     | TXT record TTL (seconds). |
 

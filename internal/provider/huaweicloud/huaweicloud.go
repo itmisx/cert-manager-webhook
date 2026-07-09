@@ -41,8 +41,8 @@ type Config struct {
 	// TTL for the challenge TXT record in seconds. Defaults to 300.
 	TTL int32 `json:"ttl,omitempty"`
 
-	AccessKeyRef provider.SecretKeySelector `json:"accessKeySecretRef,omitempty"`
-	SecretKeyRef provider.SecretKeySelector `json:"secretKeySecretRef,omitempty"`
+	AccessKeyRef provider.SecretKeySelector `json:"accessKeyRef,omitempty"`
+	SecretKeyRef provider.SecretKeySelector `json:"secretKeyRef,omitempty"`
 
 	// Inline credentials for local `go test` only. Do NOT use in manifests.
 	AccessKey string `json:"accessKey,omitempty"`
@@ -128,7 +128,7 @@ func resolveCredentials(ctx context.Context, cfg Config, namespace string, resol
 
 	ak, sk = strings.TrimSpace(ak), strings.TrimSpace(sk)
 	if ak == "" || sk == "" {
-		return "", "", fmt.Errorf("huaweicloud: access key and secret key must be provided via accessKeySecretRef/secretKeySecretRef")
+		return "", "", fmt.Errorf("huaweicloud: access key and secret key must be provided via accessKeyRef/secretKeyRef")
 	}
 	return ak, sk, nil
 }

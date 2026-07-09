@@ -42,7 +42,7 @@ exists; `CleanUp` may run when it is already gone. Neither is an error.
    const Name = "cloudflare"
 
    type Config struct {
-       APITokenRef provider.SecretKeySelector `json:"apiTokenSecretRef"`
+       APITokenRef provider.SecretKeySelector `json:"apiTokenRef"`
        // ...
    }
 

@@ -1,10 +1,10 @@
 {
   "ttl": 600,
-  "secretIdSecretRef": {
+  "accessKeyRef": {
     "name": "tencentcloud-credentials",
-    "key": "secret-id"
+    "key": "access-key"
   },
-  "secretKeySecretRef": {
+  "secretKeyRef": {
     "name": "tencentcloud-credentials",
     "key": "secret-key"
   }

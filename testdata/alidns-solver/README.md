@@ -16,8 +16,8 @@ you must:
      name: alidns-credentials
    type: Opaque
    stringData:
-     access-key-id: "YOUR_ACCESS_KEY_ID"
-     access-key-secret: "YOUR_ACCESS_KEY_SECRET"
+     access-key: "YOUR_ACCESS_KEY_ID"
+     secret-key: "YOUR_ACCESS_KEY_SECRET"
    ```
 
 3. Export `TEST_ZONE_NAME` to a zone you actually control on AliDNS, e.g.

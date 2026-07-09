@@ -48,8 +48,8 @@ helm install cert-manager-webhook-dns \
 
 ```bash
 kubectl -n cert-manager create secret generic alidns-credentials \
-  --from-literal=access-key-id=你的_ACCESS_KEY_ID \
-  --from-literal=access-key-secret=你的_ACCESS_KEY_SECRET
+  --from-literal=access-key=你的_ACCESS_KEY_ID \
+  --from-literal=secret-key=你的_ACCESS_KEY_SECRET
 ```
 
 ### 2. 创建 ClusterIssuer
@@ -75,12 +75,12 @@ spec:
             solverName: alidns
             config:
               regionId: cn-hangzhou
-              accessKeyIdSecretRef:
+              accessKeyRef:
                 name: alidns-credentials
-                key: access-key-id
-              accessKeySecretSecretRef:
+                key: access-key
+              secretKeyRef:
                 name: alidns-credentials
-                key: access-key-secret
+                key: secret-key
 ```
 
 ### 3. 申请证书
@@ -112,8 +112,8 @@ spec:
 
 | 字段                          | 类型   | 必填  | 默认值                | 说明 |
 |------------------------------|--------|-------|----------------------|------|
-| `accessKeyIdSecretRef`       | object | 是    | —                    | 指向 AccessKey **ID** 的 Secret 引用(`key` 默认 `access-key-id`)。 |
-| `accessKeySecretSecretRef`   | object | 是    | —                    | 指向 AccessKey **Secret** 的 Secret 引用(`key` 默认 `access-key-secret`)。 |
+| `accessKeyRef`               | object | 是    | —                    | 指向 AccessKey **ID** 的 Secret 引用(`key` 默认 `access-key`)。 |
+| `secretKeyRef`               | object | 是    | —                    | 指向 AccessKey **Secret** 的 Secret 引用(`key` 默认 `secret-key`)。 |
 | `regionId`                   | string | 否    | *(不设)*              | 可选区域,例如 `cn-hangzhou`。DNS 是全局服务。 |
 | `endpoint`                   | string | 否    | `alidns.aliyuncs.com`| 覆盖 API 接入点。 |
 | `ttl`                        | int    | 否    | `600`                | TXT 记录 TTL(秒),强制不小于 600(免费版下限)。 |
@@ -122,8 +122,8 @@ spec:
 
 | 字段                  | 类型   | 必填  | 默认值    | 说明 |
 |----------------------|--------|-------|-----------|------|
-| `secretIdSecretRef`  | object | 是    | —         | 指向 **SecretId** 的 Secret 引用(`key` 默认 `secret-id`)。 |
-| `secretKeySecretRef` | object | 是    | —         | 指向 **SecretKey** 的 Secret 引用(`key` 默认 `secret-key`)。 |
+| `accessKeyRef`  | object | 是    | —         | 指向 **SecretId** 的 Secret 引用(`key` 默认 `access-key`)。 |
+| `secretKeyRef` | object | 是    | —         | 指向 **SecretKey** 的 Secret 引用(`key` 默认 `secret-key`)。 |
 | `region`             | string | 否    | *(不设)*  | 可选;DNSPod 是全局服务。 |
 | `ttl`                | int    | 否    | `600`     | TXT 记录 TTL(秒)。 |
 
@@ -131,8 +131,8 @@ spec:
 
 | 字段                  | 类型   | 必填  | 默认值       | 说明 |
 |----------------------|--------|-------|--------------|------|
-| `accessKeySecretRef` | object | 是    | —            | 指向 **Access Key(AK)** 的 Secret 引用(`key` 默认 `access-key`)。 |
-| `secretKeySecretRef` | object | 是    | —            | 指向 **Secret Key(SK)** 的 Secret 引用(`key` 默认 `secret-key`)。 |
+| `accessKeyRef` | object | 是    | —            | 指向 **Access Key(AK)** 的 Secret 引用(`key` 默认 `access-key`)。 |
+| `secretKeyRef` | object | 是    | —            | 指向 **Secret Key(SK)** 的 Secret 引用(`key` 默认 `secret-key`)。 |
 | `region`             | string | 否    | `cn-north-4` | DNS 接入点区域。 |
 | `ttl`                | int    | 否    | `300`        | TXT 记录 TTL(秒)。 |
 
@@ -140,8 +140,8 @@ spec:
 
 | 字段                  | 类型   | 必填  | 默认值             | 说明 |
 |----------------------|--------|-------|--------------------|------|
-| `accessKeySecretRef` | object | 是    | —                  | 指向 **Access Key** 的 Secret 引用(`key` 默认 `access-key`)。 |
-| `secretKeySecretRef` | object | 是    | —                  | 指向 **Secret Key** 的 Secret 引用(`key` 默认 `secret-key`)。 |
+| `accessKeyRef` | object | 是    | —                  | 指向 **Access Key** 的 Secret 引用(`key` 默认 `access-key`)。 |
+| `secretKeyRef` | object | 是    | —                  | 指向 **Secret Key** 的 Secret 引用(`key` 默认 `secret-key`)。 |
 | `endpoint`           | string | 否    | `dns.baidubce.com` | 覆盖 API 接入点。 |
 | `ttl`                | int    | 否    | `300`              | TXT 记录 TTL(秒)。 |
 

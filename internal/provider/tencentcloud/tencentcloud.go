@@ -29,7 +29,7 @@ const (
 	// defaultTTL is DNSPod's free-plan minimum TTL.
 	defaultTTL = 600
 
-	defaultSecretIDKey  = "secret-id"
+	defaultSecretIDKey  = "access-key"
 	defaultSecretKeyKey = "secret-key"
 
 	// notFoundCodePrefix is returned by DescribeRecordList when a subdomain has
@@ -44,8 +44,8 @@ type Config struct {
 	// TTL for the challenge TXT record in seconds. Defaults to 600.
 	TTL uint64 `json:"ttl,omitempty"`
 
-	SecretIDRef  provider.SecretKeySelector `json:"secretIdSecretRef,omitempty"`
-	SecretKeyRef provider.SecretKeySelector `json:"secretKeySecretRef,omitempty"`
+	AccessKeyRef provider.SecretKeySelector `json:"accessKeyRef,omitempty"`
+	SecretKeyRef provider.SecretKeySelector `json:"secretKeyRef,omitempty"`
 
 	// Inline credentials for local `go test` only. Do NOT use in manifests.
 	SecretID  string `json:"secretId,omitempty"`
@@ -97,8 +97,8 @@ func New(ctx context.Context, rawConfig []byte, namespace string, resolve provid
 func resolveCredentials(ctx context.Context, cfg Config, namespace string, resolve provider.SecretResolver) (id, key string, err error) {
 	id, key = cfg.SecretID, cfg.SecretKey
 
-	if id == "" && !cfg.SecretIDRef.IsZero() {
-		sel := cfg.SecretIDRef
+	if id == "" && !cfg.AccessKeyRef.IsZero() {
+		sel := cfg.AccessKeyRef
 		if sel.Key == "" {
 			sel.Key = defaultSecretIDKey
 		}
@@ -118,7 +118,7 @@ func resolveCredentials(ctx context.Context, cfg Config, namespace string, resol
 
 	id, key = strings.TrimSpace(id), strings.TrimSpace(key)
 	if id == "" || key == "" {
-		return "", "", fmt.Errorf("tencentcloud: secret id and key must be provided via secretIdSecretRef/secretKeySecretRef")
+		return "", "", fmt.Errorf("tencentcloud: secret id and key must be provided via accessKeyRef/secretKeyRef")
 	}
 	return id, key, nil
 }
