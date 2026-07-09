@@ -9,11 +9,14 @@ require (
 	github.com/baidubce/bce-sdk-go v0.9.270
 	github.com/cert-manager/cert-manager v1.18.2
 	github.com/huaweicloud/huaweicloud-sdk-go-v3 v0.1.204
+	github.com/spf13/cobra v1.8.1
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.130
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod v1.3.124
 	k8s.io/api v0.32.0
 	k8s.io/apimachinery v0.32.0
+	k8s.io/apiserver v0.32.0
 	k8s.io/client-go v0.32.0
+	k8s.io/component-base v0.32.0
 )
 
 require (
@@ -74,7 +77,6 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.61.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
-	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stoewer/go-strcase v1.3.0 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
@@ -107,7 +109,6 @@ require (
 	golang.org/x/time v0.8.0 // indirect
 	golang.org/x/tools v0.28.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20241219192143-6b3ec007d9bb // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20241219192143-6b3ec007d9bb // indirect
 	google.golang.org/grpc v1.69.2 // indirect
@@ -118,8 +119,6 @@ require (
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/apiextensions-apiserver v0.32.0 // indirect
-	k8s.io/apiserver v0.32.0 // indirect
-	k8s.io/component-base v0.32.0 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kms v0.32.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20241212222426-2c72e554b1e7 // indirect
