@@ -82,8 +82,8 @@ metadata:
   name: alidns-credentials
   namespace: cert-manager
 stringData:
-  access-key: "YOUR_ACCESS_KEY_ID"
-  secret-key: "YOUR_ACCESS_KEY_SECRET"
+  access-key-id: "YOUR_ACCESS_KEY_ID"
+  access-key-secret: "YOUR_ACCESS_KEY_SECRET"
 ```
 
 Save as `secret.yaml`, then apply with `kubectl apply -f secret.yaml`.
@@ -115,16 +115,20 @@ spec:
     solvers:
       - dns01:
           webhook:
+            # The webhook's API group; MUST match the groupName used at Helm install.
             groupName: acme.example.com
+            # Which provider's solver to use: alidns / tencentcloud / huaweicloud / baiducloud.
             solverName: alidns
             config:
               regionId: cn-hangzhou
-              accessKeyRef:
+              # Reference to the "AccessKey ID": name = Secret name, key = the key in it.
+              accessKeyIDRef:
                 name: alidns-credentials
-                key: access-key
-              secretKeyRef:
+                key: access-key-id
+              # Reference to the "AccessKey Secret": name = Secret name, key = the key in it.
+              accessKeySecretRef:
                 name: alidns-credentials
-                key: secret-key
+                key: access-key-secret
 ```
 
 ### 3️⃣ Request a certificate
@@ -153,15 +157,15 @@ spec:
 `groupName` must match the Helm `groupName`; `solverName` selects the provider. Credentials always come from a Kubernetes Secret in the challenge namespace.
 
 > [!TIP]
-> Every provider's credential fields are **unified** as `accessKeyRef` / `secretKeyRef`, mapping to the Secret's default `access-key` / `secret-key` keys. No matter which cloud you use, the config looks the same.
+> Every provider's credential fields are **unified** as `accessKeyIDRef` / `accessKeySecretRef`, mapping to the Secret's default `access-key-id` / `access-key-secret` keys. No matter which cloud you use, the config looks the same.
 
 <details open>
 <summary><b>🟠 <code>solverName: alidns</code> (Alibaba Cloud)</b></summary>
 
 | Field | Type | Required | Default | Description |
 |:-----|:----|:--------:|:-------|:-----------|
-| `accessKeyRef` | object | ✅ | — | Secret ref to the AccessKey **ID** (`key` defaults to `access-key`). |
-| `secretKeyRef` | object | ✅ | — | Secret ref to the AccessKey **Secret** (`key` defaults to `secret-key`). |
+| `accessKeyIDRef` | object | ✅ | — | Secret ref to the AccessKey **ID** (`key` defaults to `access-key-id`). |
+| `accessKeySecretRef` | object | ✅ | — | Secret ref to the AccessKey **Secret** (`key` defaults to `access-key-secret`). |
 | `regionId` | string | — | *(unset)* | Optional region, e.g. `cn-hangzhou`. DNS is a global service. |
 | `endpoint` | string | — | `alidns.aliyuncs.com` | Override the API endpoint. |
 | `ttl` | int | — | `600` | TXT record TTL (seconds). Clamped to ≥ 600 (AliDNS free-plan minimum). |
@@ -173,8 +177,8 @@ spec:
 
 | Field | Type | Required | Default | Description |
 |:-----|:----|:--------:|:-------|:-----------|
-| `accessKeyRef` | object | ✅ | — | Secret ref to the **SecretId** (`key` defaults to `access-key`). |
-| `secretKeyRef` | object | ✅ | — | Secret ref to the **SecretKey** (`key` defaults to `secret-key`). |
+| `accessKeyIDRef` | object | ✅ | — | Secret ref to the **SecretId** (`key` defaults to `access-key-id`). |
+| `accessKeySecretRef` | object | ✅ | — | Secret ref to the **SecretKey** (`key` defaults to `access-key-secret`). |
 | `region` | string | — | *(unset)* | Optional; DNSPod is a global service. |
 | `ttl` | int | — | `600` | TXT record TTL (seconds). |
 
@@ -185,8 +189,8 @@ spec:
 
 | Field | Type | Required | Default | Description |
 |:-----|:----|:--------:|:-------|:-----------|
-| `accessKeyRef` | object | ✅ | — | Secret ref to the **Access Key (AK)** (`key` defaults to `access-key`). |
-| `secretKeyRef` | object | ✅ | — | Secret ref to the **Secret Key (SK)** (`key` defaults to `secret-key`). |
+| `accessKeyIDRef` | object | ✅ | — | Secret ref to the **Access Key (AK)** (`key` defaults to `access-key-id`). |
+| `accessKeySecretRef` | object | ✅ | — | Secret ref to the **Secret Key (SK)** (`key` defaults to `access-key-secret`). |
 | `region` | string | — | `cn-north-4` | DNS endpoint region. |
 | `ttl` | int | — | `300` | TXT record TTL (seconds). |
 
@@ -197,8 +201,8 @@ spec:
 
 | Field | Type | Required | Default | Description |
 |:-----|:----|:--------:|:-------|:-----------|
-| `accessKeyRef` | object | ✅ | — | Secret ref to the **Access Key** (`key` defaults to `access-key`). |
-| `secretKeyRef` | object | ✅ | — | Secret ref to the **Secret Key** (`key` defaults to `secret-key`). |
+| `accessKeyIDRef` | object | ✅ | — | Secret ref to the **Access Key** (`key` defaults to `access-key-id`). |
+| `accessKeySecretRef` | object | ✅ | — | Secret ref to the **Secret Key** (`key` defaults to `access-key-secret`). |
 | `endpoint` | string | — | `dns.baidubce.com` | Override the API endpoint. |
 | `ttl` | int | — | `300` | TXT record TTL (seconds). |
 

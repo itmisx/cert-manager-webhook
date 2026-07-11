@@ -24,8 +24,8 @@ const (
 	// defaultTTL matches Baidu Cloud DNS' console default.
 	defaultTTL = 300
 
-	defaultAccessKeyKey = "access-key"
-	defaultSecretKeyKey = "secret-key"
+	defaultAccessKeyKey = "access-key-id"
+	defaultSecretKeyKey = "access-key-secret"
 )
 
 // Config is the JSON `config` block for the Baidu Cloud DNS solver.
@@ -36,8 +36,8 @@ type Config struct {
 	// TTL for the challenge TXT record in seconds. Defaults to 300.
 	TTL int32 `json:"ttl,omitempty"`
 
-	AccessKeyRef provider.SecretKeySelector `json:"accessKeyRef,omitempty"`
-	SecretKeyRef provider.SecretKeySelector `json:"secretKeyRef,omitempty"`
+	AccessKeyIDRef     provider.SecretKeySelector `json:"accessKeyIDRef,omitempty"`
+	AccessKeySecretRef provider.SecretKeySelector `json:"accessKeySecretRef,omitempty"`
 
 	// Inline credentials for local `go test` only. Do NOT use in manifests.
 	AccessKey string `json:"accessKey,omitempty"`
@@ -88,8 +88,8 @@ func New(ctx context.Context, rawConfig []byte, namespace string, resolve provid
 func resolveCredentials(ctx context.Context, cfg Config, namespace string, resolve provider.SecretResolver) (ak, sk string, err error) {
 	ak, sk = cfg.AccessKey, cfg.SecretKey
 
-	if ak == "" && !cfg.AccessKeyRef.IsZero() {
-		sel := cfg.AccessKeyRef
+	if ak == "" && !cfg.AccessKeyIDRef.IsZero() {
+		sel := cfg.AccessKeyIDRef
 		if sel.Key == "" {
 			sel.Key = defaultAccessKeyKey
 		}
@@ -97,8 +97,8 @@ func resolveCredentials(ctx context.Context, cfg Config, namespace string, resol
 			return "", "", fmt.Errorf("baiducloud: reading access key: %w", err)
 		}
 	}
-	if sk == "" && !cfg.SecretKeyRef.IsZero() {
-		sel := cfg.SecretKeyRef
+	if sk == "" && !cfg.AccessKeySecretRef.IsZero() {
+		sel := cfg.AccessKeySecretRef
 		if sel.Key == "" {
 			sel.Key = defaultSecretKeyKey
 		}
@@ -109,7 +109,7 @@ func resolveCredentials(ctx context.Context, cfg Config, namespace string, resol
 
 	ak, sk = strings.TrimSpace(ak), strings.TrimSpace(sk)
 	if ak == "" || sk == "" {
-		return "", "", fmt.Errorf("baiducloud: access key and secret key must be provided via accessKeyRef/secretKeyRef")
+		return "", "", fmt.Errorf("baiducloud: access key and secret key must be provided via accessKeyIDRef/accessKeySecretRef")
 	}
 	return ak, sk, nil
 }

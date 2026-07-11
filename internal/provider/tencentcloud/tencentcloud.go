@@ -29,8 +29,8 @@ const (
 	// defaultTTL is DNSPod's free-plan minimum TTL.
 	defaultTTL = 600
 
-	defaultSecretIDKey  = "access-key"
-	defaultSecretKeyKey = "secret-key"
+	defaultSecretIDKey  = "access-key-id"
+	defaultSecretKeyKey = "access-key-secret"
 
 	// notFoundCodePrefix is returned by DescribeRecordList when a subdomain has
 	// no records. We treat it as "no matching record", not an error.
@@ -44,8 +44,8 @@ type Config struct {
 	// TTL for the challenge TXT record in seconds. Defaults to 600.
 	TTL uint64 `json:"ttl,omitempty"`
 
-	AccessKeyRef provider.SecretKeySelector `json:"accessKeyRef,omitempty"`
-	SecretKeyRef provider.SecretKeySelector `json:"secretKeyRef,omitempty"`
+	AccessKeyIDRef     provider.SecretKeySelector `json:"accessKeyIDRef,omitempty"`
+	AccessKeySecretRef provider.SecretKeySelector `json:"accessKeySecretRef,omitempty"`
 
 	// Inline credentials for local `go test` only. Do NOT use in manifests.
 	SecretID  string `json:"secretId,omitempty"`
@@ -97,8 +97,8 @@ func New(ctx context.Context, rawConfig []byte, namespace string, resolve provid
 func resolveCredentials(ctx context.Context, cfg Config, namespace string, resolve provider.SecretResolver) (id, key string, err error) {
 	id, key = cfg.SecretID, cfg.SecretKey
 
-	if id == "" && !cfg.AccessKeyRef.IsZero() {
-		sel := cfg.AccessKeyRef
+	if id == "" && !cfg.AccessKeyIDRef.IsZero() {
+		sel := cfg.AccessKeyIDRef
 		if sel.Key == "" {
 			sel.Key = defaultSecretIDKey
 		}
@@ -106,8 +106,8 @@ func resolveCredentials(ctx context.Context, cfg Config, namespace string, resol
 			return "", "", fmt.Errorf("tencentcloud: reading secret id: %w", err)
 		}
 	}
-	if key == "" && !cfg.SecretKeyRef.IsZero() {
-		sel := cfg.SecretKeyRef
+	if key == "" && !cfg.AccessKeySecretRef.IsZero() {
+		sel := cfg.AccessKeySecretRef
 		if sel.Key == "" {
 			sel.Key = defaultSecretKeyKey
 		}
@@ -118,7 +118,7 @@ func resolveCredentials(ctx context.Context, cfg Config, namespace string, resol
 
 	id, key = strings.TrimSpace(id), strings.TrimSpace(key)
 	if id == "" || key == "" {
-		return "", "", fmt.Errorf("tencentcloud: secret id and key must be provided via accessKeyRef/secretKeyRef")
+		return "", "", fmt.Errorf("tencentcloud: secret id and key must be provided via accessKeyIDRef/accessKeySecretRef")
 	}
 	return id, key, nil
 }

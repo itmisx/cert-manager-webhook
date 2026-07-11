@@ -29,9 +29,11 @@ spec:
               # region is optional; DNS is a global AliDNS service.
               regionId: cn-hangzhou
               ttl: 600
-              accessKeyRef:
+              # Reference to the AccessKey ID: name = Secret name, key = key within it.
+              accessKeyIDRef:
                 name: alidns-credentials
-                key: access-key
-              secretKeyRef:
+                key: access-key-id
+              # Reference to the AccessKey Secret: name = Secret name, key = key within it.
+              accessKeySecretRef:
                 name: alidns-credentials
-                key: secret-key
+                key: access-key-secret

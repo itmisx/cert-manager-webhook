@@ -82,8 +82,8 @@ metadata:
   name: alidns-credentials
   namespace: cert-manager
 stringData:
-  access-key: "你的_ACCESS_KEY_ID"
-  secret-key: "你的_ACCESS_KEY_SECRET"
+  access-key-id: "你的_ACCESS_KEY_ID"
+  access-key-secret: "你的_ACCESS_KEY_SECRET"
 ```
 
 保存为 `secret.yaml` 后执行 `kubectl apply -f secret.yaml`。
@@ -112,16 +112,20 @@ spec:
     solvers:
       - dns01:
           webhook:
+            # webhook 的 API 组名,必须与 Helm 安装时的 groupName 完全一致。
             groupName: acme.example.com
+            # 选用哪个云厂商的 solver:alidns / tencentcloud / huaweicloud / baiducloud。
             solverName: alidns
             config:
               regionId: cn-hangzhou
-              accessKeyRef:
+              # 「AccessKey ID」凭据的引用:name=Secret 名,key=Secret 里存 ID 的键。
+              accessKeyIDRef:
                 name: alidns-credentials
-                key: access-key
-              secretKeyRef:
+                key: access-key-id
+              # 「AccessKey Secret」凭据的引用:name=Secret 名,key=Secret 里存密钥的键。
+              accessKeySecretRef:
                 name: alidns-credentials
-                key: secret-key
+                key: access-key-secret
 ```
 
 ### 3️⃣ 申请证书
@@ -150,15 +154,15 @@ spec:
 `groupName` 须与 Helm 的 `groupName` 一致;`solverName` 决定用哪个厂商。凭据一律来自校验命名空间里的 Kubernetes Secret。
 
 > [!TIP]
-> 所有厂商的凭据字段已**统一**为 `accessKeyRef` / `secretKeyRef`,对应 Secret 里默认的 `access-key` / `secret-key` 两个 key。无论用哪家云,填法都一样。
+> 所有厂商的凭据字段已**统一**为 `accessKeyIDRef` / `accessKeySecretRef`,对应 Secret 里默认的 `access-key-id` / `access-key-secret` 两个 key。无论用哪家云,填法都一样。
 
 <details open>
 <summary><b>🟠 <code>solverName: alidns</code>(阿里云)</b></summary>
 
 | 字段 | 类型 | 必填 | 默认值 | 说明 |
 |:----|:----|:----:|:------|:----|
-| `accessKeyRef` | object | ✅ | — | 指向 AccessKey **ID** 的 Secret 引用(`key` 默认 `access-key`)。 |
-| `secretKeyRef` | object | ✅ | — | 指向 AccessKey **Secret** 的 Secret 引用(`key` 默认 `secret-key`)。 |
+| `accessKeyIDRef` | object | ✅ | — | 指向 AccessKey **ID** 的 Secret 引用(`key` 默认 `access-key-id`)。 |
+| `accessKeySecretRef` | object | ✅ | — | 指向 AccessKey **Secret** 的 Secret 引用(`key` 默认 `access-key-secret`)。 |
 | `regionId` | string | — | *(不设)* | 可选区域,例如 `cn-hangzhou`。DNS 是全局服务。 |
 | `endpoint` | string | — | `alidns.aliyuncs.com` | 覆盖 API 接入点。 |
 | `ttl` | int | — | `600` | TXT 记录 TTL(秒),强制不小于 600(免费版下限)。 |
@@ -170,8 +174,8 @@ spec:
 
 | 字段 | 类型 | 必填 | 默认值 | 说明 |
 |:----|:----|:----:|:------|:----|
-| `accessKeyRef` | object | ✅ | — | 指向 **SecretId** 的 Secret 引用(`key` 默认 `access-key`)。 |
-| `secretKeyRef` | object | ✅ | — | 指向 **SecretKey** 的 Secret 引用(`key` 默认 `secret-key`)。 |
+| `accessKeyIDRef` | object | ✅ | — | 指向 **SecretId** 的 Secret 引用(`key` 默认 `access-key-id`)。 |
+| `accessKeySecretRef` | object | ✅ | — | 指向 **SecretKey** 的 Secret 引用(`key` 默认 `access-key-secret`)。 |
 | `region` | string | — | *(不设)* | 可选;DNSPod 是全局服务。 |
 | `ttl` | int | — | `600` | TXT 记录 TTL(秒)。 |
 
@@ -182,8 +186,8 @@ spec:
 
 | 字段 | 类型 | 必填 | 默认值 | 说明 |
 |:----|:----|:----:|:------|:----|
-| `accessKeyRef` | object | ✅ | — | 指向 **Access Key(AK)** 的 Secret 引用(`key` 默认 `access-key`)。 |
-| `secretKeyRef` | object | ✅ | — | 指向 **Secret Key(SK)** 的 Secret 引用(`key` 默认 `secret-key`)。 |
+| `accessKeyIDRef` | object | ✅ | — | 指向 **Access Key(AK)** 的 Secret 引用(`key` 默认 `access-key-id`)。 |
+| `accessKeySecretRef` | object | ✅ | — | 指向 **Secret Key(SK)** 的 Secret 引用(`key` 默认 `access-key-secret`)。 |
 | `region` | string | — | `cn-north-4` | DNS 接入点区域。 |
 | `ttl` | int | — | `300` | TXT 记录 TTL(秒)。 |
 
@@ -194,8 +198,8 @@ spec:
 
 | 字段 | 类型 | 必填 | 默认值 | 说明 |
 |:----|:----|:----:|:------|:----|
-| `accessKeyRef` | object | ✅ | — | 指向 **Access Key** 的 Secret 引用(`key` 默认 `access-key`)。 |
-| `secretKeyRef` | object | ✅ | — | 指向 **Secret Key** 的 Secret 引用(`key` 默认 `secret-key`)。 |
+| `accessKeyIDRef` | object | ✅ | — | 指向 **Access Key** 的 Secret 引用(`key` 默认 `access-key-id`)。 |
+| `accessKeySecretRef` | object | ✅ | — | 指向 **Secret Key** 的 Secret 引用(`key` 默认 `access-key-secret`)。 |
 | `endpoint` | string | — | `dns.baidubce.com` | 覆盖 API 接入点。 |
 | `ttl` | int | — | `300` | TXT 记录 TTL(秒)。 |
 

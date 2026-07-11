@@ -35,8 +35,8 @@ const (
 
 	// defaultAccessKeyIDKey / defaultAccessKeySecretKey are the Secret keys
 	// used when the config omits an explicit `key`.
-	defaultAccessKeyIDKey     = "access-key"
-	defaultAccessKeySecretKey = "secret-key"
+	defaultAccessKeyIDKey     = "access-key-id"
+	defaultAccessKeySecretKey = "access-key-secret"
 )
 
 // Config is the JSON `config` block users place under the webhook solver. All
@@ -50,9 +50,9 @@ type Config struct {
 	// TTL for the challenge TXT record in seconds. Clamped to >= 600.
 	TTL int64 `json:"ttl,omitempty"`
 
-	// AccessKeyRef / SecretKeyRef reference the RAM credentials.
-	AccessKeyRef provider.SecretKeySelector `json:"accessKeyRef,omitempty"`
-	SecretKeyRef provider.SecretKeySelector `json:"secretKeyRef,omitempty"`
+	// AccessKeyIDRef / AccessKeySecretRef reference the RAM credentials.
+	AccessKeyIDRef     provider.SecretKeySelector `json:"accessKeyIDRef,omitempty"`
+	AccessKeySecretRef provider.SecretKeySelector `json:"accessKeySecretRef,omitempty"`
 
 	// AccessKeyID / AccessKeySecret allow inline credentials for local
 	// `go test` runs only. Do NOT use these in cluster manifests.
@@ -117,8 +117,8 @@ func New(ctx context.Context, rawConfig []byte, namespace string, resolve provid
 func resolveCredentials(ctx context.Context, cfg Config, namespace string, resolve provider.SecretResolver) (keyID, secret string, err error) {
 	keyID, secret = cfg.AccessKeyID, cfg.AccessKeySecret
 
-	if keyID == "" && !cfg.AccessKeyRef.IsZero() {
-		sel := cfg.AccessKeyRef
+	if keyID == "" && !cfg.AccessKeyIDRef.IsZero() {
+		sel := cfg.AccessKeyIDRef
 		if sel.Key == "" {
 			sel.Key = defaultAccessKeyIDKey
 		}
@@ -127,8 +127,8 @@ func resolveCredentials(ctx context.Context, cfg Config, namespace string, resol
 		}
 	}
 
-	if secret == "" && !cfg.SecretKeyRef.IsZero() {
-		sel := cfg.SecretKeyRef
+	if secret == "" && !cfg.AccessKeySecretRef.IsZero() {
+		sel := cfg.AccessKeySecretRef
 		if sel.Key == "" {
 			sel.Key = defaultAccessKeySecretKey
 		}
@@ -139,7 +139,7 @@ func resolveCredentials(ctx context.Context, cfg Config, namespace string, resol
 
 	keyID, secret = strings.TrimSpace(keyID), strings.TrimSpace(secret)
 	if keyID == "" || secret == "" {
-		return "", "", fmt.Errorf("alidns: access key id and secret must be provided via accessKeyRef/secretKeyRef")
+		return "", "", fmt.Errorf("alidns: access key id and secret must be provided via accessKeyIDRef/accessKeySecretRef")
 	}
 	return keyID, secret, nil
 }
